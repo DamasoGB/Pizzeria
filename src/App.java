@@ -2,7 +2,6 @@ import java.util.HashSet;
 
 public class App {
     public static void main(String[] args) throws Exception {
-        //TODO: Funcionamiento app
         Ingrediente tomate = new Ingrediente("Tomate", 2.25);
         Ingrediente albahaca = new Ingrediente("albahaca", 1.10);
         Ingrediente sal = new Ingrediente("sal", 1.05);
