@@ -92,7 +92,9 @@ public class Create {
         sql = "CREATE INDEX IX_pizza_pizza_ingredient ON pizza_ingredient(id_pizza);";
         stmt.executeUpdate(sql);
         sql = "CREATE INDEX IX_ingredient_pizza_ingredient ON pizza_ingredient(id_ingredient);";
-        stmt.executeUpdate(sql);  	  
+        stmt.executeUpdate(sql);
+        
+        conn.close();
       } catch (SQLException e) {
          e.printStackTrace();
       } 
