@@ -1,4 +1,6 @@
-public class Ingrediente extends Entity{
+package objectsPizzeria;
+
+public class Ingredient extends Entity{
     private String name;
     private double price;
     public void validate(){
@@ -15,7 +17,7 @@ public class Ingrediente extends Entity{
         }
     }
 
-    public Ingrediente(String name, double price){
+    public Ingredient(String name, double price){
 		this.name=name;
 		this.price=price;
 	}

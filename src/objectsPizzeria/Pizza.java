@@ -1,3 +1,5 @@
+package objectsPizzeria;
+
 import java.util.HashSet;
 import java.util.Set;
 
@@ -5,8 +7,8 @@ public class Pizza extends Entity {
     private String name;
     private double price=0;
     private String url;
-    private final Set<Ingrediente> ingredientes = new HashSet<Ingrediente>();
-	private final Set<Comentario> comentarios = new HashSet<Comentario>();
+    private final Set<Ingredient> ingredients = new HashSet<Ingredient>();
+	private final Set<Comment> comments = new HashSet<Comment>();
 
     public void validate() {
         super.validate();
@@ -31,32 +33,32 @@ public class Pizza extends Entity {
 		this.url=url;
 	}
 
-    public void setIngredientes(Ingrediente[] ingredientes){
-        for (Ingrediente ingrediente : ingredientes) {
-            this.ingredientes.add(ingrediente);
+    public void setIngredients(Ingredient[] ingredients){
+        for (Ingredient ingredient : ingredients) {
+            this.ingredients.add(ingredient);
         }
     }
 
-    public Set<Ingrediente> getIngredientes(){
-        return this.ingredientes;
+    public Set<Ingredient> getIngredients(){
+        return this.ingredients;
     }
 
-    public void removeIngrediente(Ingrediente ingrediente){
-        this.ingredientes.remove(ingrediente);
+    public void removeIngredient(Ingredient ingredient){
+        this.ingredients.remove(ingredient);
     }
 
-    public void setComentario(Comentario[] comentarios){
-        for (Comentario comentario : comentarios) {
-            this.comentarios.add(comentario);
+    public void setComment(Comment[] comments){
+        for (Comment comment : comments) {
+            this.comments.add(comment);
         }
     }
 
-    public Set<Comentario> getComentario(){
-        return this.comentarios;
+    public Set<Comment> getComment(){
+        return this.comments;
     }
 
-    public void removeComentario(Comentario comentario){
-        this.comentarios.remove(comentario);
+    public void removeComment(Comment comment){
+        this.comments.remove(comment);
     }
 
     public String getName(){
@@ -76,7 +78,7 @@ public class Pizza extends Entity {
     }
 
     public double getPrice() {
-        for(Ingrediente ingred: ingredientes){
+        for(Ingredient ingred: ingredients){
             price += ingred.getPrice();
         }
         price *= 1.2;

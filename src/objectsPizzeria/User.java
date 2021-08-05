@@ -1,10 +1,12 @@
-public class Usuario extends Entity{
+package objectsPizzeria;
+
+public class User extends Entity{
 	public String email;
 	public String nombre;
 	public String apellidos;
 	public String contraseña;
 	
-	public Usuario(String email, String nombre, String apellidos, String contraseña){
+	public User(String email, String nombre, String apellidos, String contraseña){
 		this.email=email;
 		this.nombre=nombre;
 		this.apellidos=apellidos;
