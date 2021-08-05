@@ -2,6 +2,7 @@ package SQLPizzeria;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
+import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.sql.Statement;
 
@@ -13,15 +14,15 @@ public class UnitOfWork {
         Create.createDB();
         Create.createTables();
     }
-    public void executeNonQuery(String sql){
+    public static void executeNonQuery(PreparedStatement sentencia){
         try(Connection conn = DriverManager.getConnection(DB_URL, USER, PASS);
          Statement stmt = conn.createStatement();
       ) {		              
-         stmt.executeUpdate(sql);
+         sentencia.executeUpdate();
          conn.close();	  
       } catch (SQLException e) {
          e.printStackTrace();
       } 
     }//Inserts, Updates, Deletes
-    public void executeQuery(){}//Selects
+    public static void executeQuery(){}//Selects
 }

@@ -17,8 +17,10 @@ public class UserDao {
         try(Connection conn = DriverManager.getConnection(DB_URL, USER, PASS);) {
             String consulta  = "INSERT INTO user (id, name, lastName, email, password) VALUES (UUID_TO_BIN(UUID()), '?', '?', '?', '');";	
             PreparedStatement sentencia= conn.prepareStatement(consulta);
-            sentencia.setString(1, "");
-            sentencia.setDouble(2, 0.1);	              
+            sentencia.setString(1, user.getNombre());
+            sentencia.setString(2, user.getApellidos());
+            sentencia.setString(3, user.getEmail());
+            sentencia.setString(4, user.getContraseña());	              
             conn.close();	  
         } catch (SQLException e) {
              e.printStackTrace();
