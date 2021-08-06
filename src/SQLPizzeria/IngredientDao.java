@@ -15,7 +15,10 @@ public class IngredientDao {
     public static void add(Ingredient ingredient){
         
         try(Connection conn = DriverManager.getConnection(DB_URL+"pizzeria", USER, PASS);) {
-            String consulta  = "INSERT INTO ingredient (id, name, price) VALUES (UUID_TO_BIN(UUID()), ?, ?);";	
+            String consulta  = """
+                            INSERT INTO ingredient (id, name, price) 
+                            VALUES (UUID_TO_BIN(UUID()), ?, ?);
+                            """;	
             PreparedStatement sentencia= conn.prepareStatement(consulta);
             sentencia.setString(1, ingredient.getName());
             sentencia.setDouble(2, ingredient.getPrice());	              

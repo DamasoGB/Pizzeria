@@ -15,7 +15,10 @@ public class UserDao {
     public void add(User user){
         
         try(Connection conn = DriverManager.getConnection(DB_URL, USER, PASS);) {
-            String consulta  = "INSERT INTO user (id, name, lastName, email, password) VALUES (UUID_TO_BIN(UUID()), '?', '?', '?', '');";	
+            String consulta  = """
+                            INSERT INTO user (id, name, lastName, email, password) 
+                            VALUES (UUID_TO_BIN(UUID()), ?, ?, ?, ?);
+                                """;	
             PreparedStatement sentencia= conn.prepareStatement(consulta);
             sentencia.setString(1, user.getNombre());
             sentencia.setString(2, user.getApellidos());

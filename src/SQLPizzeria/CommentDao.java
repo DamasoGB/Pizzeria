@@ -1,6 +1,7 @@
 package SQLPizzeria;
 
 import java.sql.Connection;
+import java.sql.Date;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
@@ -14,12 +15,19 @@ public class CommentDao {
 
     public void add(Comment comment){
         
-        try(Connection conn = DriverManager.getConnection(DB_URL, USER, PASS);) {
-            String consulta  = "INSERT INTO ingredient (id, name, price) VALUES (UUID_TO_BIN(UUID()), '?', ?);";	
+        try(Connection conn = DriverManager.getConnection(DB_URL+"pizzeria", USER, PASS);) {
+            String consulta  = """
+                        INSERT INTO comment (id, text, score, fecha, user) 
+                        VALUES (UUID_TO_BIN(UUID()), ?, ?, ?, 
+                        SELECT id FROM user WHERE name=?);
+                            """;	
             PreparedStatement sentencia= conn.prepareStatement(consulta);
-            sentencia.setString(1, "");
-            sentencia.setDouble(2, 0.1);	              
-            conn.close();	  
+            sentencia.setString(1, comment.getTexto());
+            sentencia.setInt(2, comment.getScore());
+            sentencia.setDate(3, (Date) comment.getFecha());
+            sentencia.setString(4, comment.getUser().getNombre());              
+            UnitOfWork.executeNonQuery(sentencia);
+            conn.close();
         } catch (SQLException e) {
              e.printStackTrace();
         }

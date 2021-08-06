@@ -15,12 +15,18 @@ public class Pizza_IngredientDao {
 
     public void add(Pizza pizza, Ingredient ingredient){
         
-        try(Connection conn = DriverManager.getConnection(DB_URL, USER, PASS);) {
-            String consulta  = "INSERT INTO  () VALUES (UUID_TO_BIN(UUID()), '?', ?);";	
+        try(Connection conn = DriverManager.getConnection(DB_URL+"pizzeria", USER, PASS);) {
+            String consulta  = """
+                            INSERT INTO pizza (id, name, url)
+                            VALUES (UUID_TO_BIN(UUID()),
+                            SELECT id FROM pizza WHERE name=?,
+                            SELECT id FROM ingredient WHERE name=?);
+                            """;	
             PreparedStatement sentencia= conn.prepareStatement(consulta);
-            sentencia.setString(1, "");
-            sentencia.setDouble(2, 0.01);	              
-            conn.close();	  
+            sentencia.setString(1, pizza.getName());
+            sentencia.setString(2, ingredient.getName());	              
+            UnitOfWork.executeNonQuery(sentencia);
+            conn.close();
         } catch (SQLException e) {
              e.printStackTrace();
         }

@@ -36,10 +36,10 @@ public class Comment extends Entity{
         this.text=text;
     }
 
-    public int getscore(){
+    public int getScore(){
         return this.score;
     }
-    public void setscore(int score){
+    public void setScore(int score){
         this.score=score;
     }
 
