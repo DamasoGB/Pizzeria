@@ -12,7 +12,7 @@ public class UserDao {
     static final String USER = System.getenv("JAVA_USER");
     static final String PASS = System.getenv("JAVA_PASSWD");
 
-    public void add(User user){
+    public static void add(User user){
         
         try(Connection conn = DriverManager.getConnection(DB_URL, USER, PASS);) {
             String consulta  = """
@@ -30,13 +30,56 @@ public class UserDao {
         }
         
     }
-    public void update(User user){
-
+    public static void update(User user, String newEmail, String newPassword){
+        try(Connection conn = DriverManager.getConnection(DB_URL+"pizzeria", USER, PASS);) {
+            String consulta  = """
+                            UPDATE ingredient 
+                            SET email = ?, password = ? 
+                            WHERE name = ? && lastname = ? AND email = ?;
+                            """;	
+            PreparedStatement sentencia= conn.prepareStatement(consulta);
+            sentencia.setString(1, user.getEmail());
+            sentencia.setString(2, user.getContraseña());
+            sentencia.setString(3, user.getNombre());
+            sentencia.setString(4, user.getApellidos());
+            sentencia.setString(5, user.getEmail());	              
+            UnitOfWork.executeNonQuery(sentencia);
+            conn.close();
+        } catch (SQLException e) {
+             e.printStackTrace();
+        }
     }
-    public void delete(User user){
-
+    public static void delete(User user){
+        try(Connection conn = DriverManager.getConnection(DB_URL+"pizzeria", USER, PASS);) {
+            String consulta  = """
+                            DELETE user 
+                            WHERE name = ? AND lastname = ? AND email = ?;
+                            """;	
+            PreparedStatement sentencia= conn.prepareStatement(consulta);
+            sentencia.setString(1, user.getNombre());
+            sentencia.setString(2, user.getApellidos());
+            sentencia.setString(3, user.getEmail());	              
+            UnitOfWork.executeNonQuery(sentencia);
+            conn.close();
+        } catch (SQLException e) {
+             e.printStackTrace();
+        }
     }
-    public void select(User user){
-
+    public static void select(User user){
+        try(Connection conn = DriverManager.getConnection(DB_URL+"pizzeria", USER, PASS);) {
+            String consulta  = """
+                            SELECT id, name, lastname, email
+                            FROM user 
+                            WHERE name = ? AND lastname = ? AND email = ?;
+                            """;	
+            PreparedStatement sentencia= conn.prepareStatement(consulta);
+            sentencia.setString(1, user.getNombre());
+            sentencia.setString(2, user.getApellidos());
+            sentencia.setString(3, user.getEmail());	              
+            UnitOfWork.executeQuery(sentencia);
+            conn.close();
+        } catch (SQLException e) {
+             e.printStackTrace();
+        }
     }
 }

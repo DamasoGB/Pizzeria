@@ -13,7 +13,7 @@ public class CommentDao {
     static final String USER = System.getenv("JAVA_USER");
     static final String PASS = System.getenv("JAVA_PASSWD");
 
-    public void add(Comment comment){
+    public static void add(Comment comment){
         
         try(Connection conn = DriverManager.getConnection(DB_URL+"pizzeria", USER, PASS);) {
             String consulta  = """
@@ -33,13 +33,53 @@ public class CommentDao {
         }
         
     }
-    public void update(Comment comment){
-
+    public static void update(Comment comment, String newText, int newScore){
+        try(Connection conn = DriverManager.getConnection(DB_URL+"pizzeria", USER, PASS);) {
+            String consulta  = """
+                            UPDATE comment 
+                            SET texto = ?, score = ?
+                            WHERE user = ? AND fecha = ?;
+                            """;	
+            PreparedStatement sentencia= conn.prepareStatement(consulta);
+            sentencia.setString(1, newText);
+            sentencia.setInt(2, newScore);
+            sentencia.setString(3, comment.getUser().getNombre());
+            sentencia.setDate(4, (Date) comment.getFecha());              
+            UnitOfWork.executeNonQuery(sentencia);
+            conn.close();
+        } catch (SQLException e) {
+             e.printStackTrace();
+        }
     }
-    public void delete(Comment comment){
-
+    public static void delete(Comment comment){
+        try(Connection conn = DriverManager.getConnection(DB_URL+"pizzeria", USER, PASS);) {
+            String consulta  = """
+                            DELETE comment 
+                            WHERE user = ? AND fecha = ?;
+                            """;	
+            PreparedStatement sentencia= conn.prepareStatement(consulta);
+            sentencia.setString(1, comment.getUser().getNombre());
+            sentencia.setDate(2, (Date) comment.getFecha());  	              
+            UnitOfWork.executeNonQuery(sentencia);
+            conn.close();
+        } catch (SQLException e) {
+             e.printStackTrace();
+        }
     }
-    public void select(Comment comment){
-
+    public static void select(Comment comment){
+        try(Connection conn = DriverManager.getConnection(DB_URL+"pizzeria", USER, PASS);) {
+            String consulta  = """
+                            SELECT id, name, lastname, email
+                            FROM user 
+                            WHERE user = ? AND fecha = ?;
+                            """;	
+            PreparedStatement sentencia= conn.prepareStatement(consulta);
+            sentencia.setString(1, comment.getUser().getNombre());
+            sentencia.setDate(2, (Date) comment.getFecha());	              
+            UnitOfWork.executeQuery(sentencia);
+            conn.close();
+        } catch (SQLException e) {
+             e.printStackTrace();
+        }
     }
 }

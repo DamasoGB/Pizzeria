@@ -13,7 +13,7 @@ public class Pizza_IngredientDao {
     static final String USER = System.getenv("JAVA_USER");
     static final String PASS = System.getenv("JAVA_PASSWD");
 
-    public void add(Pizza pizza, Ingredient ingredient){
+    public static void add(Pizza pizza, Ingredient ingredient){
         
         try(Connection conn = DriverManager.getConnection(DB_URL+"pizzeria", USER, PASS);) {
             String consulta  = """
@@ -32,13 +32,36 @@ public class Pizza_IngredientDao {
         }
         
     }
-    public void update(Pizza pizza, Ingredient ingredient){
-
+    
+    public static void delete(Pizza pizza,Ingredient ingredient){
+        try(Connection conn = DriverManager.getConnection(DB_URL+"pizzeria", USER, PASS);) {
+            String consulta  = """
+                            DELETE pizza_ingredient 
+                            WHERE id_pizza = ? AND id_ingredient = ?;
+                            """;	
+            PreparedStatement sentencia= conn.prepareStatement(consulta);
+            sentencia.setString(1, ingredient.getId().toString());
+            sentencia.setString(2, ingredient.getId().toString());              
+            UnitOfWork.executeNonQuery(sentencia);
+            conn.close();
+        } catch (SQLException e) {
+             e.printStackTrace();
+        }
     }
-    public void delete(Pizza pizza, Ingredient ingredient){
-
-    }
-    public void select(Pizza pizza, Ingredient ingredient){
-
+    public static void select(Pizza pizza, Ingredient ingredient){
+        try(Connection conn = DriverManager.getConnection(DB_URL+"pizzeria", USER, PASS);) {
+            String consulta  = """
+                            SELECT id, id_pizza, id_ingredient
+                            FROM pizza_ingredient 
+                            WHERE id_pizza = ? AND id_ingredient = ?;
+                            """;	
+            PreparedStatement sentencia= conn.prepareStatement(consulta);
+            sentencia.setString(1, ingredient.getId().toString());
+            sentencia.setString(2, ingredient.getId().toString()); 	              
+            UnitOfWork.executeQuery(sentencia);
+            conn.close();
+        } catch (SQLException e) {
+             e.printStackTrace();
+        }
     }
 }

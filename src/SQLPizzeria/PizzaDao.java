@@ -12,7 +12,7 @@ public class PizzaDao {
     static final String USER = System.getenv("JAVA_USER");
     static final String PASS = System.getenv("JAVA_PASSWD");
 
-    public void add(Pizza pizza){
+    public static void add(Pizza pizza){
         
         try(Connection conn = DriverManager.getConnection(DB_URL+"pizzeria", USER, PASS);) {
             String consulta  = """
@@ -29,13 +29,49 @@ public class PizzaDao {
         }
         
     }
-    public void update(Pizza pizza){
-
+    public static void update(Pizza pizza, String newUrl){
+        try(Connection conn = DriverManager.getConnection(DB_URL+"pizzeria", USER, PASS);) {
+            String consulta  = """
+                            UPDATE pizza 
+                            SET url = ? 
+                            WHERE name = ?;
+                            """;	
+            PreparedStatement sentencia= conn.prepareStatement(consulta);
+            sentencia.setString(1, newUrl);
+            sentencia.setString(2, pizza.getName());	              
+            UnitOfWork.executeNonQuery(sentencia);
+            conn.close();
+        } catch (SQLException e) {
+             e.printStackTrace();
+        }
     }
-    public void delete(Pizza pizza){
-
+    public static void delete(Pizza pizza){
+        try(Connection conn = DriverManager.getConnection(DB_URL+"pizzeria", USER, PASS);) {
+            String consulta  = """
+                            DELETE pizza 
+                            WHERE name = ?;
+                            """;	
+            PreparedStatement sentencia= conn.prepareStatement(consulta);
+            sentencia.setString(1, pizza.getName());	              
+            UnitOfWork.executeNonQuery(sentencia);
+            conn.close();
+        } catch (SQLException e) {
+             e.printStackTrace();
+        }
     }
-    public void select(Pizza pizza){
-
+    public static void select(Pizza pizza){
+        try(Connection conn = DriverManager.getConnection(DB_URL+"pizzeria", USER, PASS);) {
+            String consulta  = """
+                            SELECT id, name, url
+                            FROM pizza
+                            WHERE name = ?;
+                            """;	
+            PreparedStatement sentencia= conn.prepareStatement(consulta);
+            sentencia.setString(1, pizza.getName());	              
+            UnitOfWork.executeQuery(sentencia);
+            conn.close();
+        } catch (SQLException e) {
+             e.printStackTrace();
+        }
     }
 }

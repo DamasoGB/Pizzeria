@@ -3,6 +3,7 @@ package SQLPizzeria;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 
@@ -23,6 +24,20 @@ public class UnitOfWork {
       } catch (SQLException e) {
          e.printStackTrace();
       } 
-    }//Inserts, Updates, Deletes
-    public static void executeQuery(){}//Selects
+    }
+    public static void executeQuery(PreparedStatement sql){
+        try(Connection conn = DriverManager.getConnection(DB_URL, USER, PASS);
+         ResultSet rs = sql.executeQuery();) {		  
+        int i=1;
+         while(rs.next()){
+            //Display values
+            i++;
+            System.out.println(rs.getString(i));
+            
+         }
+         conn.close();
+      } catch (SQLException e) {
+         e.printStackTrace();
+      } 
+    }
 }

@@ -29,13 +29,49 @@ public class IngredientDao {
         }
         
     }
-    public void update(Ingredient ingredient){
-
+    public static void update(Ingredient ingredient, Double newPrice){
+        try(Connection conn = DriverManager.getConnection(DB_URL+"pizzeria", USER, PASS);) {
+            String consulta  = """
+                            UPDATE ingredient 
+                            SET price = ? 
+                            WHERE name = ?;
+                            """;	
+            PreparedStatement sentencia= conn.prepareStatement(consulta);
+            sentencia.setDouble(1, newPrice);
+            sentencia.setString(2, ingredient.getName());	              
+            UnitOfWork.executeNonQuery(sentencia);
+            conn.close();
+        } catch (SQLException e) {
+             e.printStackTrace();
+        }
     }
-    public void delete(Ingredient ingredient){
-
+    public static void delete(Ingredient ingredient){
+        try(Connection conn = DriverManager.getConnection(DB_URL+"pizzeria", USER, PASS);) {
+            String consulta  = """
+                            DELETE ingredient 
+                            WHERE name = ?;
+                            """;	
+            PreparedStatement sentencia= conn.prepareStatement(consulta);
+            sentencia.setString(1, ingredient.getName());	              
+            UnitOfWork.executeNonQuery(sentencia);
+            conn.close();
+        } catch (SQLException e) {
+             e.printStackTrace();
+        }
     }
-    public void select(Ingredient ingredient){
-
+    public static void select(Ingredient ingredient){
+        try(Connection conn = DriverManager.getConnection(DB_URL+"pizzeria", USER, PASS);) {
+            String consulta  = """
+                            SELECT id, name, price
+                            FROM ingredient 
+                            WHERE name = ?;
+                            """;	
+            PreparedStatement sentencia= conn.prepareStatement(consulta);
+            sentencia.setString(1, ingredient.getName());	              
+            UnitOfWork.executeQuery(sentencia);
+            conn.close();
+        } catch (SQLException e) {
+             e.printStackTrace();
+        }
     }
 }
