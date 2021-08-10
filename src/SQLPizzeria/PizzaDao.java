@@ -1,20 +1,17 @@
 package SQLPizzeria;
 
 import java.sql.Connection;
-import java.sql.DriverManager;
 import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 
 import objectsPizzeria.Pizza;
 
 public class PizzaDao {
-    static final String DB_URL = System.getenv("JAVA_SERV");
-    static final String USER = System.getenv("JAVA_USER");
-    static final String PASS = System.getenv("JAVA_PASSWD");
 
-    public static void add(Pizza pizza){
+    public static void add(Pizza pizza, Connection conn){
         
-        try(Connection conn = DriverManager.getConnection(DB_URL+"pizzeria", USER, PASS);) {
+        try {
             String consulta  = """
                             INSERT INTO pizza (id, name, url) 
                             VALUES (UUID_TO_BIN(UUID()), ?, ?);
@@ -22,15 +19,15 @@ public class PizzaDao {
             PreparedStatement sentencia= conn.prepareStatement(consulta);
             sentencia.setString(1, pizza.getName());
             sentencia.setString(2, pizza.getUrl());	              
-            UnitOfWork.executeNonQuery(sentencia);
-            conn.close();
+            UnitOfWork.executeNonQuery(sentencia, conn);
+            
         } catch (SQLException e) {
              e.printStackTrace();
         }
         
     }
-    public static void update(Pizza pizza, String newUrl){
-        try(Connection conn = DriverManager.getConnection(DB_URL+"pizzeria", USER, PASS);) {
+    public static void update(Pizza pizza, String newUrl, Connection conn){
+        try {
             String consulta  = """
                             UPDATE pizza 
                             SET url = ? 
@@ -39,28 +36,28 @@ public class PizzaDao {
             PreparedStatement sentencia= conn.prepareStatement(consulta);
             sentencia.setString(1, newUrl);
             sentencia.setString(2, pizza.getName());	              
-            UnitOfWork.executeNonQuery(sentencia);
-            conn.close();
+            UnitOfWork.executeNonQuery(sentencia, conn);
+            
         } catch (SQLException e) {
              e.printStackTrace();
         }
     }
-    public static void delete(Pizza pizza){
-        try(Connection conn = DriverManager.getConnection(DB_URL+"pizzeria", USER, PASS);) {
+    public static void delete(Pizza pizza, Connection conn){
+        try {
             String consulta  = """
                             DELETE pizza 
                             WHERE name = ?;
                             """;	
             PreparedStatement sentencia= conn.prepareStatement(consulta);
             sentencia.setString(1, pizza.getName());	              
-            UnitOfWork.executeNonQuery(sentencia);
-            conn.close();
+            UnitOfWork.executeNonQuery(sentencia, conn);
+            
         } catch (SQLException e) {
              e.printStackTrace();
         }
     }
-    public static void select(Pizza pizza){
-        try(Connection conn = DriverManager.getConnection(DB_URL+"pizzeria", USER, PASS);) {
+    public static void select(Pizza pizza, Connection conn){
+        try {
             String consulta  = """
                             SELECT id, name, url
                             FROM pizza
@@ -68,8 +65,13 @@ public class PizzaDao {
                             """;	
             PreparedStatement sentencia= conn.prepareStatement(consulta);
             sentencia.setString(1, pizza.getName());	              
-            UnitOfWork.executeQuery(sentencia);
-            conn.close();
+            ResultSet rs = UnitOfWork.executeQuery(sentencia, conn);
+
+            while(rs.next()){
+                System.out.println(rs.getObject(1));
+                System.out.println(rs.getString(2));
+                System.out.println(rs.getString(3));
+            }
         } catch (SQLException e) {
              e.printStackTrace();
         }

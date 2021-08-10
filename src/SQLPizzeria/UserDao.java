@@ -1,20 +1,17 @@
 package SQLPizzeria;
 
 import java.sql.Connection;
-import java.sql.DriverManager;
 import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 
 import objectsPizzeria.User;
 
 public class UserDao {
-    static final String DB_URL = System.getenv("JAVA_SERV");
-    static final String USER = System.getenv("JAVA_USER");
-    static final String PASS = System.getenv("JAVA_PASSWD");
 
-    public static void add(User user){
+    public static void add(User user, Connection conn){
         
-        try(Connection conn = DriverManager.getConnection(DB_URL, USER, PASS);) {
+        try {
             String consulta  = """
                             INSERT INTO user (id, name, lastName, email, password) 
                             VALUES (UUID_TO_BIN(UUID()), ?, ?, ?, ?);
@@ -24,14 +21,14 @@ public class UserDao {
             sentencia.setString(2, user.getApellidos());
             sentencia.setString(3, user.getEmail());
             sentencia.setString(4, user.getContraseña());	              
-            conn.close();	  
+            	  
         } catch (SQLException e) {
              e.printStackTrace();
         }
         
     }
-    public static void update(User user, String newEmail, String newPassword){
-        try(Connection conn = DriverManager.getConnection(DB_URL+"pizzeria", USER, PASS);) {
+    public static void update(User user, String newEmail, String newPassword, Connection conn){
+        try {
             String consulta  = """
                             UPDATE ingredient 
                             SET email = ?, password = ? 
@@ -43,14 +40,14 @@ public class UserDao {
             sentencia.setString(3, user.getNombre());
             sentencia.setString(4, user.getApellidos());
             sentencia.setString(5, user.getEmail());	              
-            UnitOfWork.executeNonQuery(sentencia);
-            conn.close();
+            UnitOfWork.executeNonQuery(sentencia, conn);
+            
         } catch (SQLException e) {
              e.printStackTrace();
         }
     }
-    public static void delete(User user){
-        try(Connection conn = DriverManager.getConnection(DB_URL+"pizzeria", USER, PASS);) {
+    public static void delete(User user, Connection conn){
+        try {
             String consulta  = """
                             DELETE user 
                             WHERE name = ? AND lastname = ? AND email = ?;
@@ -59,14 +56,14 @@ public class UserDao {
             sentencia.setString(1, user.getNombre());
             sentencia.setString(2, user.getApellidos());
             sentencia.setString(3, user.getEmail());	              
-            UnitOfWork.executeNonQuery(sentencia);
-            conn.close();
+            UnitOfWork.executeNonQuery(sentencia, conn);
+            
         } catch (SQLException e) {
              e.printStackTrace();
         }
     }
-    public static void select(User user){
-        try(Connection conn = DriverManager.getConnection(DB_URL+"pizzeria", USER, PASS);) {
+    public static void select(User user, Connection conn){
+        try {
             String consulta  = """
                             SELECT id, name, lastname, email
                             FROM user 
@@ -76,8 +73,14 @@ public class UserDao {
             sentencia.setString(1, user.getNombre());
             sentencia.setString(2, user.getApellidos());
             sentencia.setString(3, user.getEmail());	              
-            UnitOfWork.executeQuery(sentencia);
-            conn.close();
+            ResultSet rs = UnitOfWork.executeQuery(sentencia, conn);
+
+            while(rs.next()){
+                System.out.println(rs.getObject(1));
+                System.out.println(rs.getString(2));
+                System.out.println(rs.getString(3));
+                System.out.println(rs.getString(4));
+            }
         } catch (SQLException e) {
              e.printStackTrace();
         }
