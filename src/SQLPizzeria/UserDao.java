@@ -23,7 +23,7 @@ public class UserDao implements Dao<User> {
         try {
             String consulta  = """
                             INSERT INTO user (id, name, lastName, email, password) 
-                            VALUES (?, ?, ?, ?, ?);
+                            VALUES (UUID_TO_BIN(?), ?, ?, ?, ?);
                             """;
             conn = getConnection();
             sentencia= conn.prepareStatement(consulta);
@@ -57,7 +57,7 @@ public class UserDao implements Dao<User> {
             String consulta  = """
                         UPDATE ingredient 
                         SET name = ?, lastName = ?, email = ?, password = ?
-                        WHERE id = ?;
+                        WHERE id = UUID_TO_BIN(?);
                             """;
             conn = getConnection();
             sentencia= conn.prepareStatement(consulta);
@@ -90,7 +90,7 @@ public class UserDao implements Dao<User> {
         try {
             String consulta  = """
                             DELETE FROM user 
-                            WHERE id = ?;
+                            WHERE id = UUID_TO_BIN(?);
                             """;
             conn = getConnection();	
             sentencia= conn.prepareStatement(consulta);
@@ -119,7 +119,7 @@ public class UserDao implements Dao<User> {
             String consulta  = """
                             SELECT id, name, lastname, email
                             FROM user 
-                            WHERE id = ?;
+                            WHERE id = UUID_TO_BIN(?);
                             """;	
             conn = getConnection();
             sentencia= conn.prepareStatement(consulta);

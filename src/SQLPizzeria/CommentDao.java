@@ -24,7 +24,7 @@ public class CommentDao implements Dao<Comment> {
         try {
             String consulta  = """
                             INSERT INTO comment (id, text, rating, date, user) 
-                            VALUES (?, ?, ?, ?, ?);
+                            VALUES (UUID_TO_BIN(?), ?, ?, ?, UUID_TO_BIN(?));
                             """;
             conn = getConnection();
             sentencia= conn.prepareStatement(consulta);
@@ -58,7 +58,7 @@ public class CommentDao implements Dao<Comment> {
             String consulta  = """
                         UPDATE ingredient 
                         SET text = ?, rating = ? 
-                        WHERE id = ?;
+                        WHERE id = UUID_TO_BIN(?);
                             """;
             conn = getConnection();
             sentencia= conn.prepareStatement(consulta);
@@ -88,7 +88,7 @@ public class CommentDao implements Dao<Comment> {
         try {
             String consulta  = """
                             DELETE FROM comment 
-                            WHERE id = ?;
+                            WHERE id = UUID_TO_BIN(?);
                             """;
             conn = getConnection();	
             sentencia= conn.prepareStatement(consulta);
@@ -117,7 +117,7 @@ public class CommentDao implements Dao<Comment> {
             String consulta  = """
                             SELECT id, text, rating, date, user
                             FROM comment 
-                            WHERE id = ?;
+                            WHERE id = UUID_TO_BIN(?);
                             """;	
             conn = getConnection();
             sentencia= conn.prepareStatement(consulta);

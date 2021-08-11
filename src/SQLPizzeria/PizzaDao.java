@@ -23,7 +23,7 @@ public class PizzaDao implements Dao<Pizza> {
         try {
             String consulta  = """
                             INSERT INTO Pizza (id, name, url) 
-                            VALUES (?, ?, ?);
+                            VALUES (UUID_TO_BIN(?), ?, ?);
                             """;
             conn = getConnection();
             sentencia= conn.prepareStatement(consulta);
@@ -55,7 +55,7 @@ public class PizzaDao implements Dao<Pizza> {
             String consulta  = """
                         UPDATE Pizza 
                         SET url = ?
-                        WHERE id = ?;
+                        WHERE id = UUID_TO_BIN(?);
                             """;
             conn = getConnection();
             sentencia= conn.prepareStatement(consulta);
@@ -84,7 +84,7 @@ public class PizzaDao implements Dao<Pizza> {
         try {
             String consulta  = """
                             DELETE FROM Pizza 
-                            WHERE id = ?;
+                            WHERE id = UUID_TO_BIN(?);
                             """;
             conn = getConnection();	
             sentencia= conn.prepareStatement(consulta);
@@ -113,7 +113,7 @@ public class PizzaDao implements Dao<Pizza> {
             String consulta  = """
                             SELECT id, name, url
                             FROM Pizza 
-                            WHERE id = ?;
+                            WHERE id = UUID_TO_BIN(?);
                             """;	
             conn = getConnection();
             sentencia= conn.prepareStatement(consulta);

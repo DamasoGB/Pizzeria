@@ -23,7 +23,7 @@ public class IngredientDao implements Dao<Ingredient> {
         try {
             String consulta  = """
                             INSERT INTO ingredient (id, name, price) 
-                            VALUES (?, ?, ?);
+                            VALUES (UUID_TO_BIN(?), ?, ?);
                             """;
             conn = getConnection();
             sentencia= conn.prepareStatement(consulta);
@@ -55,7 +55,7 @@ public class IngredientDao implements Dao<Ingredient> {
             String consulta  = """
                         UPDATE ingredient 
                         SET price = ?, name = ? 
-                        WHERE id = ?;
+                        WHERE id = UUID_TO_BIN(?);
                             """;
             conn = getConnection();
             sentencia= conn.prepareStatement(consulta);
@@ -85,7 +85,7 @@ public class IngredientDao implements Dao<Ingredient> {
         try {
             String consulta  = """
                             DELETE FROM ingredient 
-                            WHERE id = ?;
+                            WHERE id = UUID_TO_BIN(?);
                             """;
             conn = getConnection();	
             sentencia= conn.prepareStatement(consulta);
@@ -114,7 +114,7 @@ public class IngredientDao implements Dao<Ingredient> {
             String consulta  = """
                             SELECT id, name, price
                             FROM ingredient 
-                            WHERE id = ?;
+                            WHERE id = UUID_TO_BIN(?);
                             """;	
             conn = getConnection();
             sentencia= conn.prepareStatement(consulta);
