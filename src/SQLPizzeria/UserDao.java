@@ -56,15 +56,16 @@ public class UserDao implements Dao<User> {
         try {
             String consulta  = """
                         UPDATE ingredient 
-                        SET email = ?, password = ?, name = ?, lastname = ?
+                        SET name = ?, lastName = ?, email = ?, password = ?
                         WHERE id = ?;
                             """;
             conn = getConnection();
             sentencia= conn.prepareStatement(consulta);
-            sentencia.setString(1, user.getEmail());
-            sentencia.setString(2, user.getContraseña());
-            sentencia.setString(3, user.getNombre());
-            sentencia.setString(4, user.getApellidos());
+            sentencia.setString(1, user.getNombre());
+            sentencia.setString(2, user.getApellidos());
+            sentencia.setString(3, user.getEmail());
+            sentencia.setString(4, user.getContraseña());
+            
             sentencia.setString(5, user.getIdCadena());
 
             UnitOfWork.executeNonQuery(sentencia);

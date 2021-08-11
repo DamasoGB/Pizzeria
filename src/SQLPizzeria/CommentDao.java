@@ -23,7 +23,7 @@ public class CommentDao implements Dao<Comment> {
     public void add(Comment comment){
         try {
             String consulta  = """
-                            INSERT INTO comment (id, text, score, fecha, user) 
+                            INSERT INTO comment (id, text, rating, date, user) 
                             VALUES (?, ?, ?, ?, ?);
                             """;
             conn = getConnection();
@@ -57,7 +57,7 @@ public class CommentDao implements Dao<Comment> {
         try {
             String consulta  = """
                         UPDATE ingredient 
-                        SET texto = ?, score = ? 
+                        SET text = ?, rating = ? 
                         WHERE id = ?;
                             """;
             conn = getConnection();
@@ -115,7 +115,7 @@ public class CommentDao implements Dao<Comment> {
     public void getAll(Comment comment){
         try {
             String consulta  = """
-                            SELECT id, text, score, fecha, user
+                            SELECT id, text, rating, date, user
                             FROM comment 
                             WHERE id = ?;
                             """;	
