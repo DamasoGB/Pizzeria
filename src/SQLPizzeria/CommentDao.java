@@ -8,82 +8,151 @@ import java.sql.SQLException;
 
 import objectsPizzeria.Comment;
 
-public class CommentDao {
+public class CommentDao implements Dao<Comment> {
 
-    public static void add(Comment comment, Connection conn){
-        
-        try{
+    Connection conn = null;
+	PreparedStatement sentencia = null;
+	ResultSet resultSet = null;
+
+    private Connection getConnection() throws SQLException {
+        Connection connection;
+        connection = ConnectionFactory.getInstance().getConnection();
+        return connection;
+    }
+    
+    public void add(Comment comment){
+        try {
             String consulta  = """
-                        INSERT INTO comment (id, text, score, fecha, user) 
-                        VALUES (UUID_TO_BIN(UUID()), ?, ?, ?, 
-                        SELECT id FROM user WHERE name=?);
-                            """;	
-            PreparedStatement sentencia= conn.prepareStatement(consulta);
+                            INSERT INTO comment (id, text, score, fecha, user) 
+                            VALUES (?, ?, ?, ?, ?);
+                            """;
+            conn = getConnection();
+            sentencia= conn.prepareStatement(consulta);
+            sentencia.setObject(1, comment.getIdCadena());
+            sentencia.setString(2, comment.getTexto());
+            sentencia.setInt(3, comment.getScore());
+            sentencia.setDate(4, (Date) comment.getFecha());
+            sentencia.setObject(5, comment.getUser().getIdCadena()); 
+
+            UnitOfWork.executeNonQuery(sentencia);
+            
+        } catch (SQLException e) {
+             e.printStackTrace();
+        } finally {
+			try {
+				if (sentencia != null)
+					conn.close();
+				if (conn != null)
+					conn.close();
+			} catch (SQLException e) {
+				e.printStackTrace();
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+
+		}
+        
+    }
+    public void update(Comment comment){
+        try {
+            String consulta  = """
+                        UPDATE ingredient 
+                        SET texto = ?, score = ? 
+                        WHERE id = ?;
+                            """;
+            conn = getConnection();
+            sentencia= conn.prepareStatement(consulta);
             sentencia.setString(1, comment.getTexto());
             sentencia.setInt(2, comment.getScore());
-            sentencia.setDate(3, (Date) comment.getFecha());
-            sentencia.setString(4, comment.getUser().getNombre());              
-            UnitOfWork.executeNonQuery(sentencia, conn);
+            sentencia.setObject(5, comment.getIdCadena());
+
+            UnitOfWork.executeNonQuery(sentencia);
             
         } catch (SQLException e) {
              e.printStackTrace();
-        }
-        
+        }finally {
+			try {
+				if (sentencia != null)
+					conn.close();
+				if (conn != null)
+					conn.close();
+			} catch (SQLException e) {
+				e.printStackTrace();
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+
+		}
     }
-    public static void update(Comment comment, String newText, int newScore, Connection conn){
-        try{
+    public void delete(Comment comment){
+        try {
             String consulta  = """
-                            UPDATE comment 
-                            SET texto = ?, score = ?
-                            WHERE user = ? AND fecha = ?;
-                            """;	
-            PreparedStatement sentencia= conn.prepareStatement(consulta);
-            sentencia.setString(1, newText);
-            sentencia.setInt(2, newScore);
-            sentencia.setString(3, comment.getUser().getNombre());
-            sentencia.setDate(4, (Date) comment.getFecha());              
-            UnitOfWork.executeNonQuery(sentencia, conn);
+                            DELETE FROM comment 
+                            WHERE id = ?;
+                            """;
+            conn = getConnection();	
+            sentencia= conn.prepareStatement(consulta);
+            sentencia.setObject(1, comment.getIdCadena());
+
+            UnitOfWork.executeNonQuery(sentencia);
             
         } catch (SQLException e) {
              e.printStackTrace();
-        }
+        }finally {
+			try {
+				if (sentencia != null)
+					conn.close();
+				if (conn != null)
+					conn.close();
+			} catch (SQLException e) {
+				e.printStackTrace();
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+
+		}
     }
-    public static void delete(Comment comment, Connection conn){
-        try{
-            String consulta  = """
-                            DELETE comment 
-                            WHERE user = ? AND fecha = ?;
-                            """;	
-            PreparedStatement sentencia= conn.prepareStatement(consulta);
-            sentencia.setString(1, comment.getUser().getNombre());
-            sentencia.setDate(2, (Date) comment.getFecha());  	              
-            UnitOfWork.executeNonQuery(sentencia, conn);
-            
-        } catch (SQLException e) {
-             e.printStackTrace();
-        }
-    }
-    public static void select(Comment comment, Connection conn){
-        try{
+    public void getAll(Comment comment){
+        try {
             String consulta  = """
                             SELECT id, text, score, fecha, user
                             FROM comment 
-                            WHERE user = ? AND fecha = ?;
+                            WHERE id = ?;
                             """;	
-            PreparedStatement sentencia= conn.prepareStatement(consulta);
-            sentencia.setString(1, comment.getUser().getNombre());
-            sentencia.setDate(2, (Date) comment.getFecha());	              
-            ResultSet rs = UnitOfWork.executeQuery(sentencia, conn);
+            conn = getConnection();
+            sentencia= conn.prepareStatement(consulta);
+            sentencia.setObject(1, comment.getIdCadena());
+            	              
+            resultSet = UnitOfWork.executeQuery(sentencia);
 
-            while(rs.next()){
-                System.out.println(rs.getObject(1));
-                System.out.println(rs.getString(2));
-                System.out.println(rs.getInt(3));
-                System.out.println(rs.getDate(4));
-                System.out.println(rs.getObject(5));
+            while(resultSet.next()){
+                System.out.println(resultSet.getObject(1));
+                System.out.println(resultSet.getString(2));
+                System.out.println(resultSet.getInt(3));
+                System.out.println(resultSet.getDate(4));
+                System.out.println(resultSet.getObject(5));
+                System.out.println();
             }
+            
         } catch (SQLException e) {
              e.printStackTrace();
-        }
+        } finally {
+			try {
+                if(resultSet != null)
+                    conn.close();
+				if (sentencia != null)
+					conn.close();
+				if (conn != null)
+					conn.close();
+			} catch (SQLException e) {
+				e.printStackTrace();
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+
+		}
     }
+
 }
+
+

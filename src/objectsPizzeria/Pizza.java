@@ -29,6 +29,7 @@ public class Pizza extends Entity {
     
 
     public Pizza(String name,String url){
+        super();
 		this.name=name;
 		this.url=url;
 	}

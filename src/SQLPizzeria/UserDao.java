@@ -7,82 +7,151 @@ import java.sql.SQLException;
 
 import objectsPizzeria.User;
 
-public class UserDao {
+public class UserDao implements Dao<User> {
 
-    public static void add(User user, Connection conn){
-        
+    Connection conn = null;
+	PreparedStatement sentencia = null;
+	ResultSet resultSet = null;
+
+    private Connection getConnection() throws SQLException {
+        Connection connection;
+        connection = ConnectionFactory.getInstance().getConnection();
+        return connection;
+    }
+    
+    public void add(User user){
         try {
             String consulta  = """
                             INSERT INTO user (id, name, lastName, email, password) 
-                            VALUES (UUID_TO_BIN(UUID()), ?, ?, ?, ?);
-                                """;	
-            PreparedStatement sentencia= conn.prepareStatement(consulta);
-            sentencia.setString(1, user.getNombre());
-            sentencia.setString(2, user.getApellidos());
-            sentencia.setString(3, user.getEmail());
-            sentencia.setString(4, user.getContraseña());	              
-            	  
+                            VALUES (?, ?, ?, ?, ?);
+                            """;
+            conn = getConnection();
+            sentencia= conn.prepareStatement(consulta);
+            sentencia.setObject(1, user.getIdCadena());
+            sentencia.setString(2, user.getNombre());
+            sentencia.setString(3, user.getApellidos());
+            sentencia.setString(4, user.getEmail());
+            sentencia.setString(5, user.getContraseña());
+
+            UnitOfWork.executeNonQuery(sentencia);
+            
         } catch (SQLException e) {
              e.printStackTrace();
-        }
+        } finally {
+			try {
+				if (sentencia != null)
+					conn.close();
+				if (conn != null)
+					conn.close();
+			} catch (SQLException e) {
+				e.printStackTrace();
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+
+		}
         
     }
-    public static void update(User user, String newEmail, String newPassword, Connection conn){
+    public void update(User user){
         try {
             String consulta  = """
-                            UPDATE ingredient 
-                            SET email = ?, password = ? 
-                            WHERE name = ? && lastname = ? AND email = ?;
-                            """;	
-            PreparedStatement sentencia= conn.prepareStatement(consulta);
+                        UPDATE ingredient 
+                        SET email = ?, password = ?, name = ?, lastname = ?
+                        WHERE id = ?;
+                            """;
+            conn = getConnection();
+            sentencia= conn.prepareStatement(consulta);
             sentencia.setString(1, user.getEmail());
             sentencia.setString(2, user.getContraseña());
             sentencia.setString(3, user.getNombre());
             sentencia.setString(4, user.getApellidos());
-            sentencia.setString(5, user.getEmail());	              
-            UnitOfWork.executeNonQuery(sentencia, conn);
+            sentencia.setString(5, user.getIdCadena());
+
+            UnitOfWork.executeNonQuery(sentencia);
             
         } catch (SQLException e) {
              e.printStackTrace();
-        }
+        }finally {
+			try {
+				if (sentencia != null)
+					conn.close();
+				if (conn != null)
+					conn.close();
+			} catch (SQLException e) {
+				e.printStackTrace();
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+
+		}
     }
-    public static void delete(User user, Connection conn){
+    public void delete(User user){
         try {
             String consulta  = """
-                            DELETE user 
-                            WHERE name = ? AND lastname = ? AND email = ?;
-                            """;	
-            PreparedStatement sentencia= conn.prepareStatement(consulta);
-            sentencia.setString(1, user.getNombre());
-            sentencia.setString(2, user.getApellidos());
-            sentencia.setString(3, user.getEmail());	              
-            UnitOfWork.executeNonQuery(sentencia, conn);
+                            DELETE FROM user 
+                            WHERE id = ?;
+                            """;
+            conn = getConnection();	
+            sentencia= conn.prepareStatement(consulta);
+            sentencia.setObject(1, user.getIdCadena());
+
+            UnitOfWork.executeNonQuery(sentencia);
             
         } catch (SQLException e) {
              e.printStackTrace();
-        }
+        }finally {
+			try {
+				if (sentencia != null)
+					conn.close();
+				if (conn != null)
+					conn.close();
+			} catch (SQLException e) {
+				e.printStackTrace();
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+
+		}
     }
-    public static void select(User user, Connection conn){
+    public void getAll(User user){
         try {
             String consulta  = """
                             SELECT id, name, lastname, email
                             FROM user 
-                            WHERE name = ? AND lastname = ? AND email = ?;
+                            WHERE id = ?;
                             """;	
-            PreparedStatement sentencia= conn.prepareStatement(consulta);
-            sentencia.setString(1, user.getNombre());
-            sentencia.setString(2, user.getApellidos());
-            sentencia.setString(3, user.getEmail());	              
-            ResultSet rs = UnitOfWork.executeQuery(sentencia, conn);
+            conn = getConnection();
+            sentencia= conn.prepareStatement(consulta);
+            sentencia.setObject(1, user.getIdCadena());
+            	              
+            resultSet = UnitOfWork.executeQuery(sentencia);
 
-            while(rs.next()){
-                System.out.println(rs.getObject(1));
-                System.out.println(rs.getString(2));
-                System.out.println(rs.getString(3));
-                System.out.println(rs.getString(4));
+            while(resultSet.next()){
+                System.out.println(resultSet.getObject(1));
+                System.out.println(resultSet.getString(2));
+                System.out.println(resultSet.getString(3));
+                System.out.println(resultSet.getString(4));
+                System.out.println();
             }
+            
         } catch (SQLException e) {
              e.printStackTrace();
-        }
+        } finally {
+			try {
+                if(resultSet != null)
+                    conn.close();
+				if (sentencia != null)
+					conn.close();
+				if (conn != null)
+					conn.close();
+			} catch (SQLException e) {
+				e.printStackTrace();
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+
+		}
     }
+
 }
+

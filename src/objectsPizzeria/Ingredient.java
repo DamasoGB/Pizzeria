@@ -23,6 +23,13 @@ public class Ingredient extends Entity{
 		this.price=price;
 	}
 
+    public void setPrice(double price){
+        this.price=price;
+    }
+
+    public void setName(String name){
+        this.name=name;
+    }
     public double getPrice(){
         return this.price;
     }

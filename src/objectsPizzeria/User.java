@@ -7,6 +7,7 @@ public class User extends Entity{
 	public String contraseña;
 	
 	public User(String email, String nombre, String apellidos, String contraseña){
+        super();
 		this.email=email;
 		this.nombre=nombre;
 		this.apellidos=apellidos;

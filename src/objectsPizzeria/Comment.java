@@ -23,6 +23,7 @@ public class Comment extends Entity{
     }
 
 	public Comment(String text, int score, Date fecha, User user){
+        super();
 		this.text=text;
 		this.score=score;
 		this.user=user;

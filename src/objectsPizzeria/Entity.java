@@ -7,8 +7,16 @@ import java.util.*;
 public abstract class Entity{
   private UUID id;
 
+  public Entity(){
+    this.id = UUID.randomUUID();
+  }
+
   public UUID getId(){
     return this.id;
+  }
+
+  public String getIdCadena(){
+    return this.id.toString().replace("-", "");
   }
   
   /*public static Entity getEntity(){

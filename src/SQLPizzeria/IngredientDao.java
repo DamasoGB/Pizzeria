@@ -7,74 +7,145 @@ import java.sql.SQLException;
 
 import objectsPizzeria.Ingredient;
 
-public class IngredientDao {
+public class IngredientDao implements Dao<Ingredient> {
 
-    public static void add(Ingredient ingredient, Connection conn){
-        
+    Connection conn = null;
+	PreparedStatement sentencia = null;
+	ResultSet resultSet = null;
+
+    private Connection getConnection() throws SQLException {
+        Connection connection;
+        connection = ConnectionFactory.getInstance().getConnection();
+        return connection;
+    }
+    
+    public void add(Ingredient ingredient){
         try {
             String consulta  = """
                             INSERT INTO ingredient (id, name, price) 
-                            VALUES (UUID_TO_BIN(UUID()), ?, ?);
-                            """;	
-            PreparedStatement sentencia= conn.prepareStatement(consulta);
-            sentencia.setString(1, ingredient.getName());
-            sentencia.setDouble(2, ingredient.getPrice());	              
-            UnitOfWork.executeNonQuery(sentencia, conn);
+                            VALUES (?, ?, ?);
+                            """;
+            conn = getConnection();
+            sentencia= conn.prepareStatement(consulta);
+            sentencia.setObject(1, ingredient.getIdCadena());
+            sentencia.setString(2, ingredient.getName());
+            sentencia.setDouble(3, ingredient.getPrice());
+
+            UnitOfWork.executeNonQuery(sentencia);
             
         } catch (SQLException e) {
              e.printStackTrace();
-        }
+        } finally {
+			try {
+				if (sentencia != null)
+					conn.close();
+				if (conn != null)
+					conn.close();
+			} catch (SQLException e) {
+				e.printStackTrace();
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+
+		}
         
     }
-    public static void update(Ingredient ingredient, Double newPrice, Connection conn){
+    public void update(Ingredient ingredient){
         try {
             String consulta  = """
-                            UPDATE ingredient 
-                            SET price = ? 
-                            WHERE name = ?;
-                            """;	
-            PreparedStatement sentencia= conn.prepareStatement(consulta);
-            sentencia.setDouble(1, newPrice);
-            sentencia.setString(2, ingredient.getName());	              
-            UnitOfWork.executeNonQuery(sentencia, conn);
+                        UPDATE ingredient 
+                        SET price = ?, name = ? 
+                        WHERE id = ?;
+                            """;
+            conn = getConnection();
+            sentencia= conn.prepareStatement(consulta);
+            sentencia.setDouble(1, ingredient.getPrice());
+            sentencia.setString(2, ingredient.getName());
+            sentencia.setObject(3, ingredient.getIdCadena());
+
+            UnitOfWork.executeNonQuery(sentencia);
             
         } catch (SQLException e) {
              e.printStackTrace();
-        }
+        }finally {
+			try {
+				if (sentencia != null)
+					conn.close();
+				if (conn != null)
+					conn.close();
+			} catch (SQLException e) {
+				e.printStackTrace();
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+
+		}
     }
-    public static void delete(Ingredient ingredient, Connection conn){
+    public void delete(Ingredient ingredient){
         try {
             String consulta  = """
-                            DELETE ingredient 
-                            WHERE name = ?;
-                            """;	
-            PreparedStatement sentencia= conn.prepareStatement(consulta);
-            sentencia.setString(1, ingredient.getName());	              
-            UnitOfWork.executeNonQuery(sentencia, conn);
+                            DELETE FROM ingredient 
+                            WHERE id = ?;
+                            """;
+            conn = getConnection();	
+            sentencia= conn.prepareStatement(consulta);
+            sentencia.setObject(1, ingredient.getIdCadena());
+
+            UnitOfWork.executeNonQuery(sentencia);
             
         } catch (SQLException e) {
              e.printStackTrace();
-        }
+        }finally {
+			try {
+				if (sentencia != null)
+					conn.close();
+				if (conn != null)
+					conn.close();
+			} catch (SQLException e) {
+				e.printStackTrace();
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+
+		}
     }
-    public static void select(Ingredient ingredient, Connection conn){
+    public void getAll(Ingredient ingredient){
         try {
             String consulta  = """
                             SELECT id, name, price
                             FROM ingredient 
-                            WHERE name = ?;
+                            WHERE id = ?;
                             """;	
-            PreparedStatement sentencia= conn.prepareStatement(consulta);
-            sentencia.setString(1, ingredient.getName());	              
-            ResultSet rs = UnitOfWork.executeQuery(sentencia, conn);
+            conn = getConnection();
+            sentencia= conn.prepareStatement(consulta);
+            sentencia.setObject(1, ingredient.getIdCadena());
+            	              
+            resultSet = UnitOfWork.executeQuery(sentencia);
 
-            while(rs.next()){
-                System.out.println(rs.getObject(1));
-                System.out.println(rs.getString(2));
-                System.out.println(rs.getDouble(3));
+            while(resultSet.next()){
+                System.out.println(resultSet.getObject(1));
+                System.out.println(resultSet.getString(2));
+                System.out.println(resultSet.getDouble(3));
+                System.out.println();
             }
             
         } catch (SQLException e) {
              e.printStackTrace();
-        }
+        } finally {
+			try {
+                if(resultSet != null)
+                    conn.close();
+				if (sentencia != null)
+					conn.close();
+				if (conn != null)
+					conn.close();
+			} catch (SQLException e) {
+				e.printStackTrace();
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+
+		}
     }
+
 }
