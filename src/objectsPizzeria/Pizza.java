@@ -34,8 +34,8 @@ public class Pizza extends Entity {
 		this.url=url;
 	}
 
-    public void setIngredients(Ingredient[] ingredients){
-        for (Ingredient ingredient : ingredients) {
+    public void setIngredients(Ingredient[] ingredients2){
+        for (Ingredient ingredient : ingredients2) {
             this.ingredients.add(ingredient);
         }
     }

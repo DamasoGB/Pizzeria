@@ -11,12 +11,24 @@ public abstract class Entity{
     this.id = UUID.randomUUID();
   }
 
+  public void generateUUID(UUID id){
+    this.id=id;
+  }
+
+  public void generateStringUUID(String string) {
+    this.id=UUID.fromString(string);
+  }
+
   public UUID getId(){
     return this.id;
   }
 
   public String getIdCadena(){
     return this.id.toString().replace("-", "");
+  }
+
+  public void setUUID(UUID id){
+    this.id=id;
   }
   
   /*public static Entity getEntity(){

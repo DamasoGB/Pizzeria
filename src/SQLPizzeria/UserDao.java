@@ -4,6 +4,8 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
 import objectsPizzeria.User;
@@ -13,6 +15,7 @@ public class UserDao implements Dao<User> {
     Connection conn = null;
 	PreparedStatement sentencia = null;
 	ResultSet resultSet = null;
+    List<User> users = new ArrayList<User>();
 
     private Connection getConnection() throws SQLException {
         Connection connection;
@@ -116,10 +119,10 @@ public class UserDao implements Dao<User> {
 		}
     }
     public Optional<User> get(User user){
-        Optional<User> oUser = Optional.of(user);
+        
         try {
             String consulta  = """
-                            SELECT id, name, lastname, email
+                            SELECT BIN_TO_UUID(id), name, lastname, email
                             FROM user 
                             WHERE id = UUID_TO_BIN(?);
                             """;	
@@ -130,11 +133,10 @@ public class UserDao implements Dao<User> {
             resultSet = UnitOfWork.executeQuery(sentencia);
 
             while(resultSet.next()){
-                System.out.println(resultSet.getObject(1));
-                System.out.println(resultSet.getString(2));
-                System.out.println(resultSet.getString(3));
-                System.out.println(resultSet.getString(4));
-                System.out.println();
+                user.generateStringUUID(resultSet.getString(1));
+                user.setNombre(resultSet.getString(2));
+                user.setApellidos(resultSet.getString(3));
+                user.setEmail(resultSet.getString(4));
             }
             
         } catch (SQLException e) {
@@ -154,7 +156,47 @@ public class UserDao implements Dao<User> {
 			}
 
 		}
+        Optional<User> oUser = Optional.of(user);
         return oUser;
+    }
+
+    public List<User> getAll() {
+        try {
+            String consulta  = """
+                            SELECT id, name, lastname, email, password
+                            FROM user;
+                            """;	
+            conn = getConnection();
+            sentencia= conn.prepareStatement(consulta);
+	              
+            resultSet = UnitOfWork.executeQuery(sentencia);
+
+            while(resultSet.next()){
+                User user = new User(resultSet.getString("email"),
+                                    resultSet.getString("name"),
+                                    resultSet.getString("lastname"),
+                                    resultSet.getString("password"));
+                user.generateStringUUID(resultSet.getString("BIN_TO_UUID(id)"));
+                users.add(user);
+            }
+            
+        } catch (SQLException e) {
+             e.printStackTrace();
+        } finally {
+			try {
+                if(resultSet != null)
+                    conn.close();
+				if (sentencia != null)
+					conn.close();
+				if (conn != null)
+					conn.close();
+			} catch (SQLException e) {
+				e.printStackTrace();
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+		}
+        return users;
     }
 
 }
