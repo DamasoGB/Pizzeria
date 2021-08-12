@@ -1,4 +1,4 @@
-package SQLPizzeria;
+package PizzeriaDao;
 
 import java.util.List;
 import java.util.Optional;

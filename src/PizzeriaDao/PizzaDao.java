@@ -1,21 +1,24 @@
-package SQLPizzeria;
+package PizzeriaDao;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
-import objectsPizzeria.User;
+import objectsPizzeria.Ingredient;
+import objectsPizzeria.Pizza;
 
-public class UserDao implements Dao<User> {
+public class PizzaDao implements Dao<Pizza> {
 
     Connection conn = null;
 	PreparedStatement sentencia = null;
 	ResultSet resultSet = null;
-    List<User> users = new ArrayList<User>();
+    List<Pizza> pizzas = new ArrayList<Pizza>();
 
     private Connection getConnection() throws SQLException {
         Connection connection;
@@ -23,22 +26,44 @@ public class UserDao implements Dao<User> {
         return connection;
     }
     
-    public void add(User user){
+    public void add(Pizza pizza){
         try {
-            String consulta  = """
-                            INSERT INTO user (id, name, lastName, email, password) 
-                            VALUES (UUID_TO_BIN(?), ?, ?, ?, ?);
-                            """;
-            conn = getConnection();
+            conn=getConnection();
+            String consulta = "BEGIN;";
             sentencia= conn.prepareStatement(consulta);
-            sentencia.setObject(1, user.getIdCadena());
-            sentencia.setString(2, user.getNombre());
-            sentencia.setString(3, user.getApellidos());
-            sentencia.setString(4, user.getEmail());
-            sentencia.setString(5, user.getContraseña());
-
             UnitOfWork.executeNonQuery(sentencia);
-            
+            consulta = """
+                        INSERT INTO Pizza (id, name, url) 
+                        VALUES (UUID_TO_BIN(?), ?, ?);
+                        """;
+            sentencia= conn.prepareStatement(consulta);
+            sentencia.setObject(1, pizza.getIdCadena());
+            sentencia.setString(2, pizza.getName());
+            sentencia.setString(3, pizza.getUrl());
+            UnitOfWork.executeNonQuery(sentencia);
+
+            consulta = """
+                    INSERT INTO pizza_ingredient (id, id_pizza, id_ingredient)
+                    VALUES (UUID_TO_BIN(UUID()),
+                    (SELECT id FROM pizza WHERE name=?),
+                    (SELECT id FROM ingredient WHERE name=?));
+                    """;
+
+            sentencia= conn.prepareStatement(consulta);
+            Set<Ingredient> ingredients = pizza.getIngredients();
+            Iterator<Ingredient> iterator = ingredients.iterator();
+            while(iterator.hasNext()){
+                Ingredient ingredient = iterator.next();
+                sentencia.setString(1, pizza.getName());
+                sentencia.setString(2, ingredient.getName());
+                sentencia.addBatch();
+            }
+            UnitOfWork.executeNonQuery(sentencia);
+
+            consulta = "COMMIT";
+            sentencia= conn.prepareStatement(consulta);
+            UnitOfWork.executeNonQuery(sentencia);
+
         } catch (SQLException e) {
              e.printStackTrace();
         } finally {
@@ -56,21 +81,17 @@ public class UserDao implements Dao<User> {
 		}
         
     }
-    public void update(User user){
+    public void update(Pizza pizza){
         try {
             String consulta  = """
-                        UPDATE user 
-                        SET name = ?, lastName = ?, email = ?, password = ?
+                        UPDATE Pizza 
+                        SET url = ?
                         WHERE id = UUID_TO_BIN(?);
                             """;
             conn = getConnection();
             sentencia= conn.prepareStatement(consulta);
-            sentencia.setString(1, user.getNombre());
-            sentencia.setString(2, user.getApellidos());
-            sentencia.setString(3, user.getEmail());
-            sentencia.setString(4, user.getContraseña());
-            
-            sentencia.setString(5, user.getIdCadena());
+            sentencia.setString(1, pizza.getUrl());
+            sentencia.setObject(2, pizza.getIdCadena());
 
             UnitOfWork.executeNonQuery(sentencia);
             
@@ -90,15 +111,15 @@ public class UserDao implements Dao<User> {
 
 		}
     }
-    public void delete(User user){
+    public void delete(Pizza pizza){
         try {
             String consulta  = """
-                            DELETE FROM user 
+                            DELETE FROM Pizza 
                             WHERE id = UUID_TO_BIN(?);
                             """;
             conn = getConnection();	
             sentencia= conn.prepareStatement(consulta);
-            sentencia.setObject(1, user.getIdCadena());
+            sentencia.setObject(1, pizza.getIdCadena());
 
             UnitOfWork.executeNonQuery(sentencia);
             
@@ -118,27 +139,27 @@ public class UserDao implements Dao<User> {
 
 		}
     }
-    public Optional<User> get(User user){
+    public Optional<Pizza> get(Pizza pizza){
         
         try {
             String consulta  = """
-                            SELECT BIN_TO_UUID(id), name, lastname, email
-                            FROM user 
+                            SELECT BIN_TO_UUID(id), name, url
+                            FROM Pizza 
                             WHERE id = UUID_TO_BIN(?);
                             """;	
             conn = getConnection();
             sentencia= conn.prepareStatement(consulta);
-            sentencia.setObject(1, user.getIdCadena());
+            sentencia.setObject(1, pizza.getIdCadena());
             	              
             resultSet = UnitOfWork.executeQuery(sentencia);
-
-            while(resultSet.next()){
-                user.generateStringUUID(resultSet.getString(1));
-                user.setNombre(resultSet.getString(2));
-                user.setApellidos(resultSet.getString(3));
-                user.setEmail(resultSet.getString(4));
-            }
             
+            
+            while(resultSet.next()){
+                pizza.generateStringUUID(resultSet.getString(1));
+                pizza.setName(resultSet.getString(2));
+                pizza.setUrl(resultSet.getString(3));
+            }
+
         } catch (SQLException e) {
              e.printStackTrace();
         } finally {
@@ -156,15 +177,15 @@ public class UserDao implements Dao<User> {
 			}
 
 		}
-        Optional<User> oUser = Optional.of(user);
-        return oUser;
+        Optional<Pizza> oPizza = Optional.of(pizza);
+        return oPizza;
     }
 
-    public List<User> getAll() {
+    public List<Pizza> getAll() {
         try {
             String consulta  = """
-                            SELECT id, name, lastname, email, password
-                            FROM user;
+                            SELECT BIN_TO_UUID(id), name, url
+                            FROM pizza;
                             """;	
             conn = getConnection();
             sentencia= conn.prepareStatement(consulta);
@@ -172,12 +193,10 @@ public class UserDao implements Dao<User> {
             resultSet = UnitOfWork.executeQuery(sentencia);
 
             while(resultSet.next()){
-                User user = new User(resultSet.getString("email"),
-                                    resultSet.getString("name"),
-                                    resultSet.getString("lastname"),
-                                    resultSet.getString("password"));
-                user.generateStringUUID(resultSet.getString("BIN_TO_UUID(id)"));
-                users.add(user);
+                Pizza pizza = new Pizza(resultSet.getString("name"),
+                                        resultSet.getString("url"));
+                pizza.generateStringUUID(resultSet.getString("BIN_TO_UUID(id)"));
+                pizzas.add(pizza);
             }
             
         } catch (SQLException e) {
@@ -196,7 +215,7 @@ public class UserDao implements Dao<User> {
 				e.printStackTrace();
 			}
 		}
-        return users;
+        return pizzas;
     }
 
 }

@@ -1,4 +1,4 @@
-package SQLPizzeria;
+package PizzeriaDao;
 
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
