@@ -10,13 +10,12 @@ public class App {
       Dao<Ingredient> ingredientDao = new IngredientDao();
       Dao<Pizza> pizzaDao = new PizzaDao();
 
-      Ingredient ingredient = new Ingredient("tomate", 0.5);
-      Pizza pizza = new Pizza("Carbonara", "http://localhost:8080");
+      Ingredient ingredient = new Ingredient("masa", 0.5);
+      Pizza pizza = new Pizza("Barbacoa", "http://localhost:8080");
 
       
       ingredientDao.add(ingredient);
       ingredient.setPrice(0.7);
-      ingredient.setName("cebolla");
       ingredientDao.update(ingredient);
       ingredientDao.getAll(ingredient);
       ingredientDao.delete(ingredient);
@@ -24,11 +23,10 @@ public class App {
       
       pizzaDao.add(pizza);
       pizza.setUrl("http://localhost:3000");
-      pizza.setName("Margarita");
       pizzaDao.update(pizza);
       pizzaDao.getAll(pizza);
       pizzaDao.delete(pizza);
 
-      
+      //CommentDao, UserDao y Pizza_IngredientDao (O en pizza)
    }
 }
