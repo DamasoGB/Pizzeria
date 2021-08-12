@@ -4,6 +4,7 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.Optional;
 
 import objectsPizzeria.Ingredient;
 
@@ -109,7 +110,8 @@ public class IngredientDao implements Dao<Ingredient> {
 
 		}
     }
-    public void getAll(Ingredient ingredient){
+    public Optional<Ingredient> get(Ingredient ingredient){
+        Optional<Ingredient> oIngredient = Optional.of(ingredient);
         try {
             String consulta  = """
                             SELECT id, name, price
@@ -146,6 +148,7 @@ public class IngredientDao implements Dao<Ingredient> {
 			}
 
 		}
+        return oIngredient;
     }
 
 }

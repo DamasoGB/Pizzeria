@@ -4,6 +4,7 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.Optional;
 
 import objectsPizzeria.Pizza;
 
@@ -108,7 +109,8 @@ public class PizzaDao implements Dao<Pizza> {
 
 		}
     }
-    public void getAll(Pizza pizza){
+    public Optional<Pizza> get(Pizza pizza){
+        Optional<Pizza> oPizza = Optional.of(pizza);
         try {
             String consulta  = """
                             SELECT id, name, url
@@ -120,14 +122,15 @@ public class PizzaDao implements Dao<Pizza> {
             sentencia.setObject(1, pizza.getIdCadena());
             	              
             resultSet = UnitOfWork.executeQuery(sentencia);
-
+            
+            
             while(resultSet.next()){
                 System.out.println(resultSet.getObject(1));
                 System.out.println(resultSet.getString(2));
                 System.out.println(resultSet.getString(3));
                 System.out.println();
             }
-            
+
         } catch (SQLException e) {
              e.printStackTrace();
         } finally {
@@ -145,6 +148,7 @@ public class PizzaDao implements Dao<Pizza> {
 			}
 
 		}
+        return oPizza;
     }
 
 }

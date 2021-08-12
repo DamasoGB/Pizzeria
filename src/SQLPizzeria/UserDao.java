@@ -4,6 +4,7 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.Optional;
 
 import objectsPizzeria.User;
 
@@ -55,7 +56,7 @@ public class UserDao implements Dao<User> {
     public void update(User user){
         try {
             String consulta  = """
-                        UPDATE ingredient 
+                        UPDATE user 
                         SET name = ?, lastName = ?, email = ?, password = ?
                         WHERE id = UUID_TO_BIN(?);
                             """;
@@ -114,7 +115,8 @@ public class UserDao implements Dao<User> {
 
 		}
     }
-    public void getAll(User user){
+    public Optional<User> get(User user){
+        Optional<User> oUser = Optional.of(user);
         try {
             String consulta  = """
                             SELECT id, name, lastname, email
@@ -152,6 +154,7 @@ public class UserDao implements Dao<User> {
 			}
 
 		}
+        return oUser;
     }
 
 }

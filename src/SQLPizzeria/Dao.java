@@ -1,8 +1,10 @@
 package SQLPizzeria;
 
+import java.util.Optional;
+
 public interface Dao<T> {
     
-    void getAll(T t);
+    Optional<T> get(T t);
     
     void add(T t);
     

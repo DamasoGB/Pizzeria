@@ -5,6 +5,7 @@ import java.sql.Date;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.Optional;
 
 import objectsPizzeria.Comment;
 
@@ -56,7 +57,7 @@ public class CommentDao implements Dao<Comment> {
     public void update(Comment comment){
         try {
             String consulta  = """
-                        UPDATE ingredient 
+                        UPDATE comment
                         SET text = ?, rating = ? 
                         WHERE id = UUID_TO_BIN(?);
                             """;
@@ -112,7 +113,8 @@ public class CommentDao implements Dao<Comment> {
 
 		}
     }
-    public void getAll(Comment comment){
+    public Optional<Comment> get(Comment comment){
+        Optional<Comment> oComment = Optional.of(comment);
         try {
             String consulta  = """
                             SELECT id, text, rating, date, user
@@ -151,6 +153,7 @@ public class CommentDao implements Dao<Comment> {
 			}
 
 		}
+        return oComment;
     }
 
 }
