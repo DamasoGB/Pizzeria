@@ -5,7 +5,7 @@ import java.util.*;
 //import java.lang.reflect.Field;
 
 public abstract class Entity{
-  private UUID id;
+  public UUID id;
 
   public Entity(){
     this.id = UUID.randomUUID();

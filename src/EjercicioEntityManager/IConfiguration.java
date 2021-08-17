@@ -1,7 +1,7 @@
 package EjercicioEntityManager;
 
-public interface IConfiguration {
+public interface IConfiguration{
     public String getUser();
-   public String getPassWord();
-   public String getUrl();
+    public String getPassword();
+    public String getUrl();
 }

@@ -1,7 +1,7 @@
 package EjercicioEntityManager;
 
-import java.sql.PreparedStatement;
+import java.sql.*;
 
 public interface Statement<T> {
-    void method(PreparedStatement statement,T entity);
+    void run(PreparedStatement statement, T entity) throws SQLException;
 }
