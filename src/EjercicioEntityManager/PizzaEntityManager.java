@@ -13,13 +13,13 @@ public class PizzaEntityManager {
         String sql="";
         PreparedStatement statement;
         Set<Ingredient> ingredients = pizza.getIngredients();
-        Iterator<Ingredient> iterable = ingredients.iterator();
+        Iterable<Ingredient> iterable;
 
         EntityManager.buildConnection(Configuration.getConfiguration())
-		     .addStatement(pizza,sql,(statement,pizza)->{
-				statement.setInt(pizza.getId())
+		     .addStatement(pizza,sql,(statement,entity)->{
+				statement.setObject(1, entity.getId().toString());
                       })
-                     .addRangeStatement<Ingredient>(iterable,sql,(statement,T)->{
+                     .addRangeStatement(iterable,sql,(statement,entity)->{
 
 		      })
 		     .save();

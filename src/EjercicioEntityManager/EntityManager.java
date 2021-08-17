@@ -10,7 +10,7 @@ public class EntityManager implements IEntityManager{
     }
     
     @Override
-    public <T> IEntityManager addRangeStatemment(Iterable<T> iterable, String sql, Statement<T> statement) {
+    public <T> IEntityManager addRangeStatement(Iterable<T> iterable, String sql, Statement<T> statement) {
         // TODO Auto-generated method stub
         return null;
     }

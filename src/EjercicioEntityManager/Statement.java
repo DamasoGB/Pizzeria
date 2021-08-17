@@ -1,5 +1,7 @@
 package EjercicioEntityManager;
 
+import java.sql.PreparedStatement;
+
 public interface Statement<T> {
-    void method(Statement<T> statement,T entity);
+    void method(PreparedStatement statement,T entity);
 }
