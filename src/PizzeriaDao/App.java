@@ -1,6 +1,6 @@
 package PizzeriaDao;
 
-import java.util.List;
+//import java.util.List;
 import java.util.UUID;
 
 import objectsPizzeria.Comment;
@@ -34,7 +34,7 @@ public class App {
       ingredientDao.add(ingredient2);
       ingredient.setPrice(0.7);
       ingredientDao.update(ingredient);
-      List<Ingredient> listIngredient = ingredientDao.getAll();
+      //List<Ingredient> listIngredient = ingredientDao.getAll();
       
       pizza.setIngredients(ingredients);
       pizzaDao.add(pizza);

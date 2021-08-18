@@ -63,10 +63,44 @@ public class EntityManager implements IEntityManager{
     private EntityManager(IConfiguration configuration){
         this.configuration = configuration;
     }
-    public <T> T Select(ResultSet resultSet){
 
-        //Class<T> aClass =  T.getClass();
-        //return aClass.getDeclaredConstructor().newInstance();
+
+    
+    public <T> T Select(ResultSet resultSet){
+        Connection connection = null;
+        
+        try{
+            connection = DriverManager.getConnection(
+                this.configuration.getUrl(),
+                this.configuration.getUser(),
+                this.configuration.getPassword()
+            );
+            
+            for(IRunables runable: this.runables){
+                PreparedStatement statement = connection.prepareStatement(runable.getSQL());
+                runable.run(statement);
+                resultSet = statement.executeQuery();
+            }
+            while(resultSet.next()){
+
+            }
+            
+        }
+        catch(SQLException e){
+            try {
+                connection.rollback();
+            } catch (SQLException e1) {
+                e1.printStackTrace();
+            }
+        }finally{
+            try {
+                if(!connection.isClosed()){
+                    connection.close();
+                }
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+        }
         return null;
     }
 
