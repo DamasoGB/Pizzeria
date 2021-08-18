@@ -63,10 +63,11 @@ public class EntityManager implements IEntityManager{
     private EntityManager(IConfiguration configuration){
         this.configuration = configuration;
     }
-    // public <T> T Select(ResultSet){
-        
-    //     Class<T> aClass = T.class();
-    //     return aClass.newInstance();
-    // }
+    public <T> T Select(ResultSet resultSet){
+
+        //Class<T> aClass =  T.getClass();
+        //return aClass.getDeclaredConstructor().newInstance();
+        return null;
+    }
 
 }
