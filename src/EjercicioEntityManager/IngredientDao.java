@@ -1,5 +1,7 @@
 package EjercicioEntityManager;
 
+import java.util.UUID;
+
 import objectsPizzeria.Ingredient;
 
 public class IngredientDao {
@@ -13,17 +15,17 @@ public class IngredientDao {
            statement.setDouble(3, entity.getPrice()); 
         }).save();
     }
-    public Ingredient select(){
-        Ingredient ingredient;
-        String sql = "SELECT BIN_TO_UUID(id),name,price FROM ingredients WHERE id=UUID_TO_BIN(?)";
+    public Ingredient select(String name){
+        Ingredient ingredient= new Ingredient();
+        String sql = "SELECT BIN_TO_UUID(id),name,price FROM ingredients WHERE id=(SELECT id FROM ingredient WHERE name=?));";
         ingredient = EntityManager.buildConnection(Configuration.getConfiguration())
                                 .addStatement(ingredient, sql, (statement,entity)->{
-                                    statement.setObject(1, entity.id.toString());
-                                }).select(Ingredient.class, (resultSet,entity)->{
-                                    entity.setUUID()=resultSet.getObject("id");
-                                    entity.setName()=resultSet.setString("name");
-                                    entity.setPrice()=resultSet.setDouble("price");
-                                }).orElseThrow();
+                                    statement.setString(1, name);
+                                }).Select(Ingredient.class, (resultSet,entity)->{
+                                    entity.generateStringUUID(resultSet.getString("BIN_TO_UUID(id)"));
+                                    entity.setName(resultSet.getString("name"));
+                                    entity.setPrice(resultSet.getDouble("price"));
+                                });
         return ingredient;
     }
 }

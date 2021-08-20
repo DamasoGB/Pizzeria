@@ -1,5 +1,7 @@
 package EjercicioEntityManager;
 
+import java.util.Optional;
+
 public interface IEntityManager {
     
     public void save();

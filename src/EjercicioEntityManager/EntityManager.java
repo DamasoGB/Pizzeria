@@ -2,6 +2,9 @@ package EjercicioEntityManager;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
+
+import objectsPizzeria.Ingredient;
 
 import java.sql.*;
 
@@ -76,13 +79,13 @@ public class EntityManager implements IEntityManager{
                 this.configuration.getPassword()
             );
             
+            connection.setAutoCommit(false);
             for(IRunables runable: this.runables){
                 PreparedStatement statement = connection.prepareStatement(runable.getSQL());
+                runable.run(statement);
                 ResultSet resultSet = statement.executeQuery();
-                runable.runRs(resultSet);
             }
-            System.out.println("Hola");
-
+            connection.commit();
         }
         catch(SQLException e){
             try {
@@ -99,6 +102,7 @@ public class EntityManager implements IEntityManager{
                 e.printStackTrace();
             }
         }
+        Optional<T> optional=null;
         return null;
     }
 
