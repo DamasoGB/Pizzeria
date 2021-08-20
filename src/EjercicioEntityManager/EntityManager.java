@@ -2,6 +2,7 @@ package EjercicioEntityManager;
 
 import java.util.ArrayList;
 import java.util.List;
+
 import java.sql.*;
 
 public class EntityManager implements IEntityManager{
@@ -66,9 +67,8 @@ public class EntityManager implements IEntityManager{
 
 
     
-    public <T> T Select(ResultSet resultSet){
+    public <T> T Select(Class<T> clazz, Resultset<T> resultset){
         Connection connection = null;
-        
         try{
             connection = DriverManager.getConnection(
                 this.configuration.getUrl(),
@@ -78,13 +78,11 @@ public class EntityManager implements IEntityManager{
             
             for(IRunables runable: this.runables){
                 PreparedStatement statement = connection.prepareStatement(runable.getSQL());
-                runable.run(statement);
-                resultSet = statement.executeQuery();
+                ResultSet resultSet = statement.executeQuery();
+                runable.runRs(resultSet);
             }
-            while(resultSet.next()){
+            System.out.println("Hola");
 
-            }
-            
         }
         catch(SQLException e){
             try {
