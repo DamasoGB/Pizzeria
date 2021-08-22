@@ -3,9 +3,7 @@ package EjercicioEntityManager;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-
-import objectsPizzeria.Ingredient;
-
+import java.lang.reflect.InvocationTargetException;
 import java.sql.*;
 
 public class EntityManager implements IEntityManager{
@@ -70,29 +68,34 @@ public class EntityManager implements IEntityManager{
 
 
     
-    public <T> T Select(Class<T> clazz, Resultset<T> resultset){
+    @Override
+    public <T> Optional<T> Select(Class<T> clazz, Resultset<T> resultset) {
+        
         Connection connection = null;
+        T entity = null;
+
         try{
             connection = DriverManager.getConnection(
                 this.configuration.getUrl(),
                 this.configuration.getUser(),
                 this.configuration.getPassword()
             );
-            
-            connection.setAutoCommit(false);
-            for(IRunables runable: this.runables){
-                PreparedStatement statement = connection.prepareStatement(runable.getSQL());
-                runable.run(statement);
-                ResultSet resultSet = statement.executeQuery();
+ 
+            IRunables runable = this.runables.get(0);
+
+            PreparedStatement statement = connection.prepareStatement(runable.getSQL());
+            runable.run(statement);
+
+            ResultSet resultSetSQL = statement.executeQuery();
+
+            while(resultSetSQL.next()){
+
+                entity = clazz.getConstructor().newInstance();
+                resultset.run(resultSetSQL, entity);
             }
-            connection.commit();
-        }
-        catch(SQLException e){
-            try {
-                connection.rollback();
-            } catch (SQLException e1) {
-                e1.printStackTrace();
-            }
+
+        }catch(SQLException | InstantiationException | IllegalAccessException | IllegalArgumentException | InvocationTargetException | NoSuchMethodException | SecurityException e){
+            e.printStackTrace();
         }finally{
             try {
                 if(!connection.isClosed()){
@@ -102,8 +105,8 @@ public class EntityManager implements IEntityManager{
                 e.printStackTrace();
             }
         }
-        Optional<T> optional=null;
-        return null;
+        
+        return Optional.of(entity);
     }
 
 }
